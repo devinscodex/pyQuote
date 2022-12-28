@@ -1,83 +1,65 @@
 # MEG quote processor
 # devin dwight
-# 2022-11-17
+# started: 2022-11-17
+# ended: 
 import os
 import pandas as pd
-
 #pd.options.display.max_rows = None # toggle this line to display all rows or not
 
-# prerequisites & variables (validate/create path > add files to list for processing)
-folder_path = "c:/bin/quotes"
-files = []
+# main program loop
+while True:
+    # prerequisites & variables (validate/create path > add files to list for processing)
+    folder_path = 'c:/bin/quotes'
+    files = []
+    if not os.path.exists(folder_path):
+        print(f'\n{folder_path} does not exist...creating now...')
+        os.makedirs(folder_path, exist_ok=True)
 
-if not os.path.exists(folder_path):
-    print(folder_path + " does not exist...creating now...")
-    os.makedirs(folder_path, exist_ok=True)
+    # loop thru folder, add Excel files to list
+    for file in os.listdir(folder_path):
+        if file.__contains__('.xls'):
+            files.append(file)
 
+    # no files...
+    if len(files) == 0:
+        print(f'There are no Excel files in "{folder_path}", please add at least one to continue...')
+        quit()
 
-# loop folder, add Excel files to list, user selects file to read into Pandas
-for file in os.listdir(folder_path):
-    if file.__contains__(".xls"):
-        files.append(file)
+    # only one file
+    if len(files) == 1:
+        selected_file = files[0]
+        selected_file = folder_path + '/' + selected_file
+        print(f'\nOnly 1 file found in {folder_path}, processing {selected_file}...')
 
-#print(quotes)
+    # multiple files
+    if len(files) > 1:
+        selection_made = False
+        invalid_input = 'Invalid selection, please select from the provided options:'
+        while not selection_made:
+            # print selections and collect input
+            print(f'\nFiles in "{folder_path}":')
+            print('0: Exit program...')
+            for i, file in enumerate(files):
+                print(f'{i + 1}: {file}')
+            input = input("Please select one: ")    
+            input = int(input)
 
-print('Please select a file:')
-for i, file in enumerate(files):
-    print(f'{i + 1}: {file}')
-
-selection_made = False
-
-invalid_input = "Invalid selection, please select from the provide options:"
-
-while not selection_made:
-    selection = input('Enter a number: ')
-    try:
-        selection = int(selection)
-        # validate selection
-        if 1 <= selection <= len(files):
-            selected_file = os.path.abspath(files[selection - 1])
-            print(os.path.abspath(selected_file)
-            #df = pd.read_excel(selected_file)
-            selection_made = True
-        else:
-            print(invalid_input)
-    except ValueError:
-        print(invalid_input)
-    #except FileNotFoundError:
-    #selected_file = selected_file.replace('\\','/')
-
-#print(df)
-
-
-
-
-
-
-
-
+            # validate input
+            if input == 0:
+                print('Have a nice day!')
+                quit()
+            if 1 <= input <= len(files):
+                selected_file = folder_path + '/' + files[input - 1]
+                print(f'\nSelected: {selected_file}')
+                selection_made = True
+            else:
+                print(invalid_input)
 
 
-
-
-
+    # process selected file
+    df = pd.read_excel(selected_file)
+    print(df)
 
 
 
-#df = pd.read_excel("c:/bin/quotes/sheet.xlsx", header=None)
-#print(df)
-
-""" if len(quotes) > 0:
-    wb = load_workbook("c:/bin/quotes/sheet.xlsx")
-    sheet = wb.active
-    for row in sheet["A1:C72"]:
-        if [x.value for x in row] == "x":
-            print([x.value for x in row]) """
-
-
-""" if len(quotes) > 0:
-    print("Quotes found:")
-    for q in quotes:
-        print(q + "\n")
-else:
-    print("No files found...") """
+print('\nend of program...\n')
