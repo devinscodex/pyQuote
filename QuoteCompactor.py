@@ -1,14 +1,12 @@
 # MEG quote processor
 # devin dwight
 # started: 2022-11-17
-# ended: 
 import os
 import pandas as pd
 
 # global vars
 quote_path = 'c:/bin/quotes'
 program_loop = True
-
 
 # functions
 def get_file_selection(files):
@@ -19,15 +17,15 @@ def get_file_selection(files):
         print(f'\nFiles in "{quote_path}":')
         for i, file in enumerate(files):
             print(f'{i + 1}: {file}')
-        print('0: Go Back')
-        input = input("Please select one: ")    
-        input = int(input)
+        print('0: Exit')
+        user_input = input("Please select one: ")    
+        user_input = int(user_input)
 
         # validate input
-        if input == 0:
-            return
-        if 1 <= input <= len(files):
-            selected_file = quote_path + '/' + files[input - 1]
+        if user_input == 0:
+            terminate_program()
+        if 1 <= user_input <= len(files):
+            selected_file = quote_path + '/' + files[user_input - 1]
             return selected_file
             #print(f'\nSelected: {selected_file}')
             #valid_input = False
@@ -35,9 +33,16 @@ def get_file_selection(files):
             print(invalid_input)
 
 
-def end_program():
-    input = input(f'\nAny key to continue or "0" to exit...')
-    return input == 0
+def user_end_program():
+    user_input = input(f'\nAny key to continue or "0" to exit...')
+    if user_input == "0":
+        return True
+    else:
+        return False
+
+def terminate_program():
+    print('\nGoodbye.\n')
+    quit()
 
 
 # main program
@@ -64,7 +69,7 @@ while program_loop:
     if len(files) == 1:
         selected_file = files[0]
         selected_file = quote_path + '/' + selected_file
-        print(f'\nOnly 1 file found in {quote_path}, processing {selected_file}...')
+        print(f'Only 1 file found in {quote_path}, processing {selected_file}...')
 
     # multiple files
     if len(files) > 1:
@@ -77,7 +82,8 @@ while program_loop:
     print(df)
 
     # continue program?
-    if end_program(): 
+    if user_end_program(): 
         break 
 
-print('\nend of program...\n')
+
+terminate_program()
