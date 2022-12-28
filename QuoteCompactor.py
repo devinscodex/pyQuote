@@ -1,52 +1,83 @@
 # MEG quote processor
 # devin dwight
-# 2022-11-17
+# started: 2022-11-17
+# ended: 
 import os
 import pandas as pd
 
-#pd.options.display.max_rows = None # toggle this line to display all rows or not
-
-# prerequisites (create path & load files to list for processing)
-folder_path = "c:/bin/quotes"
-quotes = []
-
-if not os.path.exists(folder_path):
-    print(folder_path + " does not exist...creating now...")
-    os.makedirs(folder_path, exist_ok=True)
-
-# variables
-contents = os.listdir(folder_path)
+# global vars
+quote_path = 'c:/bin/quotes'
+program_loop = True
 
 
-# loop through quote folder, add Excel files to list
-for file in os.listdir(folder_path):
-    if file.__contains__(".xls"):
-        quotes.append(file)
+# functions
+def get_file_selection(files):
+    #valid_input = False
+    invalid_input = 'Invalid selection, please select from the provided options:'
+    while True:
+        # print selections & collect input
+        print(f'\nFiles in "{quote_path}":')
+        for i, file in enumerate(files):
+            print(f'{i + 1}: {file}')
+        print('0: Go Back')
+        input = input("Please select one: ")    
+        input = int(input)
 
-# for obj in contents:
-#     if os.path.isfile(obj):
-#         print("file found....")    
-#     if obj.__contains__(".xl"):
-#         quotes.append(obj) # add full path to quotes list
-#         #quotes.append(os.path.abspath(obj)) # add full path to quotes list <- this adds \\ in path...
-
-print(quotes)
-
-#df = pd.read_excel("c:/bin/quotes/sheet.xlsx", header=None)
-#print(df)
-
-""" if len(quotes) > 0:
-    wb = load_workbook("c:/bin/quotes/sheet.xlsx")
-    sheet = wb.active
-    for row in sheet["A1:C72"]:
-        if [x.value for x in row] == "x":
-            print([x.value for x in row]) """
+        # validate input
+        if input == 0:
+            return
+        if 1 <= input <= len(files):
+            selected_file = quote_path + '/' + files[input - 1]
+            return selected_file
+            #print(f'\nSelected: {selected_file}')
+            #valid_input = False
+        else:
+            print(invalid_input)
 
 
+def end_program():
+    input = input(f'\nAny key to continue or "0" to exit...')
+    return input == 0
 
-""" if len(quotes) > 0:
-    print("Quotes found:")
-    for q in quotes:
-        print(q + "\n")
-else:
-    print("No files found...") """
+
+# main program
+while program_loop:
+    selected_file = ''
+    print(f'\npyQuote init...scanning "{quote_path}" for Excel files...')
+    # prerequisites & variables (validate/create path > add files to list for processing)
+    files = []
+    if not os.path.exists(quote_path):
+        print(f'{quote_path} does not exist...creating now...')
+        os.makedirs(quote_path, exist_ok=True)
+
+    # loop thru folder, add Excel files to list
+    for file in os.listdir(quote_path):
+        if file.__contains__('.xls'):
+            files.append(file)
+
+    # no files...
+    if len(files) == 0:
+        print(f'\nThere are no Excel files in "{quote_path}", please add at least one to continue...\n')
+        continue
+
+    # only one file
+    if len(files) == 1:
+        selected_file = files[0]
+        selected_file = quote_path + '/' + selected_file
+        print(f'\nOnly 1 file found in {quote_path}, processing {selected_file}...')
+
+    # multiple files
+    if len(files) > 1:
+        selected_file = get_file_selection(files)
+        if not selected_file: continue # if empty, next iteration
+
+    # process selected file
+    print(f'Attempting to convert "{selected_file}" into a dataframe...\n')
+    df = pd.read_excel(selected_file)
+    print(df)
+
+    # continue program?
+    if end_program(): 
+        break 
+
+print('\nend of program...\n')
