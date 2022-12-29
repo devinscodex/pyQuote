@@ -3,52 +3,17 @@
 # started: 2022-11-17
 import os
 import pandas as pd
+import codex
 
-# global vars
+# program vars
 quote_path = 'c:/bin/quotes'
 program_loop = True
-
-# functions
-def get_file_selection(files):
-    #valid_input = False
-    invalid_input = 'Invalid selection, please select from the provided options:'
-    while True:
-        # print selections & collect input
-        print(f'\nFiles in "{quote_path}":')
-        for i, file in enumerate(files):
-            print(f'{i + 1}: {file}')
-        print('0: Exit')
-        user_input = input("Please select one: ")    
-        user_input = int(user_input)
-
-        # validate input
-        if user_input == 0:
-            terminate_program()
-        if 1 <= user_input <= len(files):
-            selected_file = quote_path + '/' + files[user_input - 1]
-            return selected_file
-            #print(f'\nSelected: {selected_file}')
-            #valid_input = False
-        else:
-            print(invalid_input)
-
-
-def user_end_program():
-    user_input = input(f'\nAny key to continue or "0" to exit...')
-    if user_input == "0":
-        return True
-    else:
-        return False
-
-def terminate_program():
-    print('\nGoodbye.\n')
-    quit()
 
 
 # main program
 while program_loop:
     selected_file = ''
-    print(f'\npyQuote init...scanning "{quote_path}" for Excel files...')
+    print(f'\npyQuote: scanning "{quote_path}" for Excel files...')
     # prerequisites & variables (validate/create path > add files to list for processing)
     files = []
     if not os.path.exists(quote_path):
@@ -73,7 +38,7 @@ while program_loop:
 
     # multiple files
     if len(files) > 1:
-        selected_file = get_file_selection(files)
+        selected_file = codex.get_file_selection(files)
         if not selected_file: continue # if empty, next iteration
 
     # process selected file
@@ -82,8 +47,7 @@ while program_loop:
     print(df)
 
     # continue program?
-    if user_end_program(): 
-        break 
+    if codex.user_end_program(): break 
 
 
-terminate_program()
+codex.terminate_program()
