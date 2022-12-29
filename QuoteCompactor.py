@@ -1,21 +1,23 @@
 # MEG quote processor
 # devin dwight
-# started: 2022-11-17
+# 2022-11-17
+
+# python solution for toggling the "hidden" state of rows of Excel files
+# inteded for our company's sales team, but may be extended for further uses
+# dependencies [pandas, windows-curses]
 import os
-import pandas as pd
 import codex
 
 # program vars
 quote_path = 'c:/bin/quotes'
-program_loop = True
+print_all_rows = False
 
-
-# main program
-while program_loop:
-    selected_file = ''
-    print(f'\npyQuote: scanning "{quote_path}" for Excel files...')
-    # prerequisites & variables (validate/create path > add files to list for processing)
+# main program loop
+while True:
     files = []
+    selected_file = ''
+
+    print(f'\npyQuote is scanning "{quote_path}" for Excel files...')
     if not os.path.exists(quote_path):
         print(f'{quote_path} does not exist...creating now...')
         os.makedirs(quote_path, exist_ok=True)
@@ -30,7 +32,7 @@ while program_loop:
         print(f'\nThere are no Excel files in "{quote_path}", please add at least one to continue...\n')
         continue
 
-    # only one file
+    # one file
     if len(files) == 1:
         selected_file = files[0]
         selected_file = quote_path + '/' + selected_file
@@ -39,15 +41,11 @@ while program_loop:
     # multiple files
     if len(files) > 1:
         selected_file = codex.get_file_selection(files)
-        if not selected_file: continue # if empty, next iteration
 
-    # process selected file
-    print(f'Attempting to convert "{selected_file}" into a dataframe...\n')
-    df = pd.read_excel(selected_file)
-    print(df)
+    codex.print_dataframe(selected_file, print_all_rows)
 
     # continue program?
     if codex.user_end_program(): break 
 
-
+# loop is broken, end program
 codex.terminate_program()

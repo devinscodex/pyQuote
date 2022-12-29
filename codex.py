@@ -1,9 +1,17 @@
-# MEG quote processor - functions
+# MEG quote processor - helper functions
 # devin dwight
+import pandas as pd
 
 quote_path = 'c:/bin/quotes'
 
 # functions
+def print_dataframe(filepath, print_all_rows = False):
+    print(f'\nConverting "{filepath}" into a dataframe...\n')
+    df = pd.read_excel(filepath)
+    if print_all_rows: pd.set_option('display.max_rows', None)
+    print(df)
+
+
 def get_file_selection(files):
     #valid_input = False
     invalid_input = 'Invalid selection, please select from the provided options:'
@@ -34,6 +42,7 @@ def user_end_program():
         return True
     else:
         return False
+
 
 def terminate_program():
     print('\nGoodbye.\n')
