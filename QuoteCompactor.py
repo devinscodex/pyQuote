@@ -1,56 +1,23 @@
 # MEG quote processor
 # devin dwight
-# started: 2022-11-17
+# 2022-11-17
+
+# python solution for toggling the "hidden" state of rows of Excel files
+# inteded for our company's sales team, but may be extended for further uses
+# dependencies [pandas, windows-curses]
 import os
-import pandas as pd
+import codex
 
-# global vars
+# program vars
 quote_path = 'c:/bin/quotes'
-program_loop = True
+print_all_rows = False
 
-# functions
-def get_file_selection(files):
-    #valid_input = False
-    invalid_input = 'Invalid selection, please select from the provided options:'
-    while True:
-        # print selections & collect input
-        print(f'\nFiles in "{quote_path}":')
-        for i, file in enumerate(files):
-            print(f'{i + 1}: {file}')
-        print('0: Exit')
-        user_input = input("Please select one: ")    
-        user_input = int(user_input)
-
-        # validate input
-        if user_input == 0:
-            terminate_program()
-        if 1 <= user_input <= len(files):
-            selected_file = quote_path + '/' + files[user_input - 1]
-            return selected_file
-            #print(f'\nSelected: {selected_file}')
-            #valid_input = False
-        else:
-            print(invalid_input)
-
-
-def user_end_program():
-    user_input = input(f'\nAny key to continue or "0" to exit...')
-    if user_input == "0":
-        return True
-    else:
-        return False
-
-def terminate_program():
-    print('\nGoodbye.\n')
-    quit()
-
-
-# main program
-while program_loop:
-    selected_file = ''
-    print(f'\npyQuote init...scanning "{quote_path}" for Excel files...')
-    # prerequisites & variables (validate/create path > add files to list for processing)
+# main program loop
+while True:
     files = []
+    selected_file = ''
+
+    print(f'\npyQuote is scanning "{quote_path}" for Excel files...')
     if not os.path.exists(quote_path):
         print(f'{quote_path} does not exist...creating now...')
         os.makedirs(quote_path, exist_ok=True)
@@ -65,7 +32,7 @@ while program_loop:
         print(f'\nThere are no Excel files in "{quote_path}", please add at least one to continue...\n')
         continue
 
-    # only one file
+    # one file
     if len(files) == 1:
         selected_file = files[0]
         selected_file = quote_path + '/' + selected_file
@@ -73,17 +40,12 @@ while program_loop:
 
     # multiple files
     if len(files) > 1:
-        selected_file = get_file_selection(files)
-        if not selected_file: continue # if empty, next iteration
+        selected_file = codex.get_file_selection(files)
 
-    # process selected file
-    print(f'Attempting to convert "{selected_file}" into a dataframe...\n')
-    df = pd.read_excel(selected_file)
-    print(df)
+    codex.print_dataframe(selected_file, print_all_rows)
 
     # continue program?
-    if user_end_program(): 
-        break 
+    if codex.user_end_program(): break 
 
-
-terminate_program()
+# loop is broken, end program
+codex.terminate_program()
